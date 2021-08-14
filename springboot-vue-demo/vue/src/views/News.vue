@@ -110,7 +110,7 @@
 import E from 'wangeditor';
 import request from "@/utils/request";
 let editor;
-let Edi;
+
 export default {
   name: 'News',
   components: {
@@ -151,19 +151,24 @@ export default {
     },
 
     creatDom(){
-      editor = new E('#div1');//富文本编辑器创建
+      editor = new E('#div1');//富文本编辑器创建，获取节点
       // 配置 server 接口地址
       editor.config.uploadImgServer = 'http://localhost:9090/files/editor/upload';
-      editor.config.uploadFileName = 'file';
-      editor.create();
+      editor.config.uploadFileName = 'file';//设置文件上传的名字
+      editor.create();//创建。
     },
 
     add(){
       this.dialogVisible = true;
       this.form = {};
-
+      //由于只有在弹窗启动之后，div节点才会被创建，那么创建富文本编辑器也只能在其之后。
       this.$nextTick(()=>{
-        this.creatDom();
+        if (editor==null){
+          this.creatDom();
+        }else {
+          editor.destroy();//这里做了一次判断，判断编辑器是否被创建，如果创建了就先销毁。
+          this.creatDom();
+        }
       });
     },
     save(){
@@ -215,8 +220,14 @@ export default {
       this.form = JSON.parse((JSON.stringify(row)));
       this.dialogVisible = true;
       this.$nextTick(()=>{
-        this.creatDom();
-        editor.txt.html(row.content);
+        if (editor==null){
+          this.creatDom();
+          editor.txt.html(row.content);
+        }else {
+          editor.destroy();//这里做了一次判断，判断编辑器是否被创建，如果创建了就先销毁。
+          this.creatDom();
+          editor.txt.html(row.content);
+        }
       });
     },
     handleSizeChange(pageSize){//改变当前页面个数
