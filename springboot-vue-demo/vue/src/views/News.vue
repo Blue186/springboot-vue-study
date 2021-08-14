@@ -58,7 +58,7 @@
 
     <div style="margin: 10px 0">
       <el-pagination
-          background="none"
+          background
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage4"
